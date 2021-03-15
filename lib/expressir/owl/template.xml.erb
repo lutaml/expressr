@@ -1,0 +1,57 @@
+<rdf:RDF 
+  xmlns:owl="http://www.w3.org/2002/07/owl#" 
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema#"  
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+
+<% if dublin_core %>
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:dcterms="http://purl.org/dc/terms/"
+<% end %>
+
+  xmlns="<%= schema_uri %>#"
+  xml:base="<%= schema_uri %>#"> 
+
+<owl:Ontology rdf:about='' rdfs:label='<%= schema.name %>' >
+  <%= annotations.join("\n") %>
+
+  <% if dublin_core %>
+    <owl:imports rdf:resource="http://purl.org/dc/terms/"/>
+    <owl:imports rdf:resource="http://purl.org/dc/elements/1.1/"/>
+  <% end %>
+</owl:Ontology>
+
+<% if top_class %>
+    <owl:Class rdf:ID='<%= top_class %>' />
+<% end %>
+
+<% schema.type_enums.each do |type_enum| %>
+  <owl:Class rdf:ID='<%= type_enum.name %>'>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <owl:oneOf rdf:parseType="Collection">
+      <% type_enum.items_array.each do |item_name| %>
+        <rdf:Description rdf:ID="<%= type_enum.name + '.' + item_name %>"/>
+      <% end %>    
+    </owl:oneOf>
+  </owl:Class>
+<% end %>
+
+<!-- Builtin types - cleanedup -->
+<% schema.builtin_types.each do |type| %>
+  <rdfs:Class rdf:ID='<%= type.name %>'>
+    <rdfs:subClassOf rdf:resource='<%= datatypes[type.domain] %>'/>
+  </rdfs:Class>
+<% end %>
+
+<!-- Custom types - cleanedup -->
+<% schema.custom_types.each do |type| %>
+  <owl:Class rdf:ID='<%= type.name %>'>
+    <% if type.kind_of?(Expressir::Express::TypeAggregate) %>
+      <rdfs:subClassOf rdf:resource='<%= datatypes["LIST"] %> '/>
+
+    <% else %>
+      <rdfs:subClassOf rdf:resource='#<%= type.typename %>'/>
+    <% end %>
+  </rdfs:Class>
+<% end %>
+</rdf:RDF>

@@ -23,21 +23,34 @@ module Expressir
 
       def extract_attributes(document)
         document_with_klass = document_with_klass(document)
-        document_with_klass[:cls].parse(document_with_klass[:document], @schema)
+
+        document_with_klass[:klass].parse(
+          document_with_klass[:document],
+          @schema,
+          type_name: document_with_klass[:type_name]
+        )
       end
 
       def document_with_klass(document)
         if !document.xpath("select").empty?
-          { document: document.xpath("select"), cls: Express::TypeSelect }
+          build_type_hash(document, "select", Express::TypeSelect)
 
         elsif !document.xpath("enumeration").empty?
-          { document: document.xpath("enumeration"), cls: Express::TypeEnum }
+          build_type_hash(document, "enumeration", Express::TypeEnum)
 
         elsif !document.xpath("aggregate").empty?
-          { document: document.xpath("aggregate"), cls: Express::TypeAggregate }
+          build_type_hash(document, "aggregate", Express::TypeAggregate)
 
         else
-          { document: document, cls: Express::Type }
+          { document: document, klass: Express::Type, type_name: nil }
+        end
+      end
+
+      def build_type_hash(document, selector, klass)
+        Hash.new.tap do |hash|
+          hash[:klass] = klass
+          hash[:document] = document.xpath(selector.to_s)
+          hash[:type_name] = document.attributes["name"].to_s
         end
       end
     end

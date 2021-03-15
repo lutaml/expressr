@@ -20,6 +20,7 @@ module Expressir
           document = document.first
         end
 
+        @name = @options.fetch(:type_name)
         @items = document.attributes["items"]
         @items_array = items.to_s.scan(/\w+/)
         super(document)

@@ -16,7 +16,7 @@ module Expressir
       private
 
       def extract_type_attributes(document)
-        @name = document.first.attributes["name"].to_s
+        @name = @options.fetch(:type_name, document.first.attributes["name"]).to_s
         @dimensions = document.map do |aggregate|
           Express::AggregateDimension.parse(aggregate)
         end

@@ -2,11 +2,11 @@ require "spec_helper"
 
 RSpec.describe "Expressir" do
   describe "express-to-owl" do
-    pending "Still needs implementation"
-
     it "convert express to owl system" do
       command = %W(express-to-owl #{sample_file})
-      capture_stdout { Expressir::Cli.start(command) }
+      output = capture_stdout { Expressir::Cli.start(command) }
+
+      puts output
     end
   end
 

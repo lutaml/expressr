@@ -18,4 +18,15 @@ module Expressir
   def self.root_path
     @root_path ||= Pathname.new(Expressir.root)
   end
+
+  def self.lib_path
+    @lib_path ||= Expressir.root_path.join("lib", "expressir")
+  end
+
+  # Important Note:
+  # Temporary - Until we cleanup the old example
+  #
+  def self.examples_path
+    Expressir.root_path.join("original", "examples")
+  end
 end

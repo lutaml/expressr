@@ -15,14 +15,14 @@ module Expressir
         self
       end
 
-      def self.parse(document, schema)
-        new(document: document, schema: schema).parse
+      def self.parse(document, schema, options = {})
+        new(options.merge(document: document, schema: schema)).parse
       end
 
       private
 
       def extract_type_attributes(document)
-        @name = document.attributes["name"].to_s
+        @name = @name || document.attributes["name"].to_s
         @wheres = extract_where_rules(document)
       end
 
